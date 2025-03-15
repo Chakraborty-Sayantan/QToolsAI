@@ -10,7 +10,6 @@ import {
   Cloud,
   Gamepad2,
   Home,
-  MessageSquare,
   Settings,
   Sparkles,
   Zap,
