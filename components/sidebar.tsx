@@ -5,188 +5,130 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
-import {
-  Braces,
-  Cloud,
-  Gamepad2,
-  Home,
-  Settings,
-  Sparkles,
-  Zap,
-  Calendar,
-  Clock,
-  Plane,
-  DollarSign,
-  Activity,
-  Newspaper,
-  KeyRound,
-  Link2,
-  Timer,
-  Image,
-  Code,
-} from "lucide-react"
-
-const sidebarItems = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: Home,
-  },
-  {
-    title: "AI Tools",
-    items: [
-      {
-        title: "Content Generator",
-        href: "/ai-tools/content-generator",
-        icon: Sparkles,
-      },
-      {
-        title: "Text Summarizer",
-        href: "/ai-tools/text-summarizer",
-        icon: Braces,
-      },
-      
-      {
-        title: "Language Translator",
-        href: "/ai-tools/translator",
-        icon: Zap,
-      },
-      {
-        title: "Image Prompt Generator",
-        href: "/ai-tools/image-prompt-generator",
-        icon: Image,
-      },
-      {
-        title: "Code Explainer",
-        href: "/ai-tools/code-explainer",
-        icon: Code,
-      },
-    ],
-  },
-  {
-    title: "Utilities",
-    items: [
-      {
-        title: "Weather",
-        href: "/utilities/weather",
-        icon: Cloud,
-      },
-      {
-        title: "QR Code Generator",
-        href: "/utilities/qr-code",
-        icon: Zap,
-      },
-      {
-        title: "Date Calculator",
-        href: "/utilities/date-calculator",
-        icon: Calendar,
-      },
-      {
-        title: "Age Calculator",
-        href: "/utilities/age-calculator",
-        icon: Clock,
-      },
-      {
-        title: "Flight Tracker",
-        href: "/utilities/flight-tracker",
-        icon: Plane,
-      },
-      {
-        title: "Currency Converter",
-        href: "/utilities/currency-converter",
-        icon: DollarSign,
-      },
-      {
-        title: "BMI Calculator",
-        href: "/utilities/bmi-calculator",
-        icon: Activity,
-      },
-      {
-        title: "Daily News",
-        href: "/utilities/daily-news",
-        icon: Newspaper,
-      },
-      {
-        title: "Password Generator",
-        href: "/utilities/password-generator",
-        icon: KeyRound,
-      },
-      {
-        title: "URL Shortener",
-        href: "/utilities/url-shortener",
-        icon: Link2,
-      },
-      {
-        title: "Pomodoro Timer",
-        href: "/utilities/pomodoro-timer",
-        icon: Timer,
-      },
-    ],
-  },
-  {
-    title: "Games",
-    items: [
-      {
-        title: "Dice Roller",
-        href: "/games/dice-roller",
-        icon: Gamepad2,
-      },
-      {
-        title: "Rock Paper Scissors",
-        href: "/games/rock-paper-scissors",
-        icon: Gamepad2,
-      },
-      {
-        title: "2048",
-        href: "/games/2048",
-        icon: Gamepad2,
-      },
-    ],
-  },
-  {
-    title: "Settings",
-    href: "/settings",
-    icon: Settings,
-  },
-]
+import { ChevronDown } from "lucide-react"
+import Image from 'next/image'
+import { useState, useEffect, useRef, useCallback } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { sidebarItems } from "@/lib/sidebar-data"
 
 export function Sidebar() {
   const pathname = usePathname()
+  const [openSections, setOpenSections] = useState<string[]>([])
+  const [isResizing, setIsResizing] = useState(false)
+  const [sidebarWidth, setSidebarWidth] = useState(288)
+  const sidebarRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const savedWidth = localStorage.getItem("sidebarWidth")
+    if (savedWidth) {
+      setSidebarWidth(Math.min(Math.max(Number(savedWidth), 200), 500))
+    }
+  }, [])
+
+  const startResizing = useCallback((mouseDownEvent: React.MouseEvent) => {
+    setIsResizing(true)
+    mouseDownEvent.preventDefault()
+  }, [])
+
+  const stopResizing = useCallback(() => {
+    setIsResizing(false)
+  }, [])
+
+  const resize = useCallback((mouseMoveEvent: MouseEvent) => {
+    if (isResizing) {
+      const newWidth = mouseMoveEvent.clientX
+      if (newWidth >= 200 && newWidth <= 500) { 
+        setSidebarWidth(newWidth)
+        localStorage.setItem("sidebarWidth", String(newWidth))
+      }
+    }
+  }, [isResizing])
+
+  useEffect(() => {
+    window.addEventListener("mousemove", resize)
+    window.addEventListener("mouseup", stopResizing)
+    return () => {
+      window.removeEventListener("mousemove", resize)
+      window.removeEventListener("mouseup", stopResizing)
+    }
+  }, [resize, stopResizing])
+  
+  useEffect(() => {
+    if (isResizing) {
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+  }, [isResizing])
+
+  const toggleSection = (title: string) => {
+    setOpenSections(prev =>
+      prev.includes(title) ? prev.filter(t => t !== title) : [...prev, title]
+    )
+  }
 
   return (
-    <div className="hidden border-r bg-background md:block md:w-64">
-      <div className="flex h-full flex-col gap-2">
-        <div className="flex h-14 items-center justify-between border-b px-4">
+    <div
+      ref={sidebarRef}
+      className="hidden md:flex relative border-r bg-background/80 dark:bg-slate-900/80 backdrop-blur-sm flex-shrink-0"
+      style={{ width: sidebarWidth }}
+    >
+      <div className="flex-1 flex flex-col gap-2 overflow-y-hidden">
+        <div className="flex h-16 items-center justify-between border-b px-4 flex-shrink-0">
           <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Sparkles className="h-6 w-6" />
-            <span>QToolsAI</span>
+            <Image src="/LOGO1.png" alt="QToolsAI Logo" width={70} height={100} />
+            <span className="text-lg font-bold font-michroma">QToolsAI</span>
           </Link>
           <ThemeToggle />
         </div>
-        <div className="flex-1 overflow-auto py-2">
+        <div className="flex-1 overflow-y-auto py-2">
           <nav className="grid items-start px-2 text-sm font-medium">
             {sidebarItems.map((item, index) => {
+              const isOpen = openSections.includes(item.title)
               return item.items ? (
                 <div key={index} className="px-3 py-2">
-                  <h2 className="mb-2 text-lg font-semibold tracking-tight">{item.title}</h2>
-                  <div className="space-y-1">
-                    {item.items.map((subItem, subIndex) => (
-                      <Button
-                        key={subIndex}
-                        variant={pathname === subItem.href ? "secondary" : "ghost"}
-                        className={cn(
-                          "w-full justify-start",
-                          pathname === subItem.href ? "bg-secondary" : "hover:bg-transparent hover:underline",
-                        )}
-                        asChild
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between"
+                    onClick={() => toggleSection(item.title)}
+                  >
+                    <div className="flex items-center">
+                      {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+                      {item.title}
+                    </div>
+                    <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
+                  </Button>
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
                       >
-                        <Link href={subItem.href}>
-                          {subItem.icon && <subItem.icon className="mr-2 h-4 w-4" />}
-                          {subItem.title}
-                        </Link>
-                      </Button>
-                    ))}
-                  </div>
+                        <div className="space-y-1 pl-4 pt-2">
+                          {item.items.map((subItem, subIndex) => (
+                            <Button
+                              key={subIndex}
+                              variant={pathname === subItem.href ? "secondary" : "ghost"}
+                              className={cn(
+                                "w-full justify-start",
+                                pathname === subItem.href && "font-bold"
+                              )}
+                              asChild
+                            >
+                              <Link href={subItem.href}>
+                                {subItem.icon && <subItem.icon className="mr-2 h-4 w-4" />}
+                                {subItem.title}
+                              </Link>
+                            </Button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               ) : (
                 <Button
@@ -194,7 +136,7 @@ export function Sidebar() {
                   variant={pathname === item.href ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start",
-                    pathname === item.href ? "bg-secondary" : "hover:bg-transparent hover:underline",
+                    pathname === item.href && "font-bold"
                   )}
                   asChild
                 >
@@ -208,7 +150,10 @@ export function Sidebar() {
           </nav>
         </div>
       </div>
+      <div
+        className="absolute top-0 right-0 h-full w-2 cursor-col-resize bg-transparent hover:bg-primary/10 transition-colors"
+        onMouseDown={startResizing}
+      />
     </div>
   )
 }
-

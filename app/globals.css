@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Michroma&family=Rowdies:wght@300;400;700&display=swap');
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -67,12 +70,21 @@
 }
 
 
-
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+  }
+
+  /* Apply the image for light mode */
+  html:not(.dark) body {
+    @apply bg-light-mode bg-cover bg-center bg-fixed;
+  }
+  
+  /* Apply the new image for dark mode */
+  .dark body {
+    @apply bg-dark-mode bg-cover bg-center bg-fixed;
   }
 }

@@ -1,5 +1,7 @@
+"use client"
 import type React from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { SearchBar } from "@/components/search-bar"
 
 interface DashboardHeaderProps {
   heading: string
@@ -15,10 +17,10 @@ export function DashboardHeader({ heading, text, children }: DashboardHeaderProp
         {text && <p className="text-muted-foreground">{text}</p>}
       </div>
       <div className="flex items-center gap-2">
+        <SearchBar />
         <ThemeToggle />
         {children}
       </div>
     </div>
   )
 }
-

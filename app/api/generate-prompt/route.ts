@@ -1,17 +1,15 @@
-import { HfInference } from '@huggingface/inference'
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: Request) {
-  const { concept, style, mood, additionalDetails } = await req.json()
+  const { concept, style, mood, additionalDetails } = await req.json();
 
-  // Validate input
   if (!concept || concept.trim().length < 3) {
     return Response.json(
       { error: "Please provide a concept with at least 3 characters" },
       { status: 400 }
-    )
+    );
   }
 
-  // Define style and mood descriptions
   const styleDescriptions: Record<string, string> = {
     photorealistic: "hyper-realistic, detailed photography, 8K, high definition",
     "digital-art": "digital art, detailed, vibrant colors, sharp lines",
@@ -23,7 +21,7 @@ export async function POST(req: Request) {
     sketch: "pencil sketch, hand-drawn, detailed linework, shading",
     "comic-book": "comic book style, bold outlines, flat colors, action-oriented",
     fantasy: "fantasy art, magical, ethereal, detailed, imaginative",
-  }
+  };
 
   const moodDescriptions: Record<string, string> = {
     vibrant: "vibrant, colorful, energetic, lively",
@@ -36,9 +34,8 @@ export async function POST(req: Request) {
     nostalgic: "nostalgic, retro, vintage, warm tones, memory-like",
     ethereal: "ethereal, dreamlike, soft glowing light, otherworldly",
     minimalist: "minimalist, clean, simple, uncluttered, elegant",
-  }
+  };
 
-  // Create the prompt for the model
   const prompt = `
     Generate a detailed AI image generation prompt based on the following inputs:
     - Concept: ${concept}
@@ -53,42 +50,27 @@ export async function POST(req: Request) {
     4. Include quality descriptors like "highly detailed" and "masterpiece".
 
     Make the prompt professional and suitable for AI image generation tools like DALL-E, Midjourney, or Stable Diffusion.
-  `
+  `;
 
   try {
-    const HF_API_KEY = process.env.HUGGINGFACE_API_KEY
-    if (!HF_API_KEY) {
-      throw new Error("Missing Hugging Face API key")
+    const apiKey = process.env.GOOGLE_API_KEY;
+    if (!apiKey) {
+      throw new Error("Missing Google AI API key");
     }
 
-    const hf = new HfInference(HF_API_KEY)
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    // Call the Hugging Face API
-    const response = await hf.textGeneration({
-      model: "mistralai/Mistral-7B-Instruct-v0.2",
-      inputs: prompt,
-      parameters: {
-        max_new_tokens: 300, // Limit the response length
-        temperature: 0.7, // Controls creativity
-        do_sample: true, // Enables sampling for better results
-      },
-    })
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    const generatedPrompt = response.text();
 
-    if (!response?.generated_text) {
-      throw new Error("No prompt generated")
-    }
-
-    // Clean up the generated text
-    const generatedPrompt = response.generated_text
-      .replace(/<\/?s>/g, "") // Remove special tokens
-      .trim()
-
-    return Response.json({ prompt: generatedPrompt })
+    return Response.json({ prompt: generatedPrompt.trim() });
   } catch (error) {
-    console.error("Error generating prompt:", error)
+    console.error("Error generating prompt:", error);
     return Response.json(
       { error: error instanceof Error ? error.message : "Failed to generate prompt" },
       { status: 500 }
-    )
+    );
   }
 }

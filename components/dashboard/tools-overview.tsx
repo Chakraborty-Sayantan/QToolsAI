@@ -1,8 +1,7 @@
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Braces, Cloud, MessageSquare, QrCode, Sparkles, Zap, Image, Code } from "lucide-react"
-import { Calendar, Clock, Plane, DollarSign, Activity, Newspaper, KeyRound, Link2, Timer, Gamepad2 } from "lucide-react"
+import { Braces, Cloud, QrCode, Sparkles, Zap, Image, Code, Calendar, Clock, Plane, DollarSign, Activity, Newspaper, KeyRound, Link2, Timer, Gamepad2, Mail, Smile, Tags, FileText, Palette, /* Train, */ Clock10, Ruler, CaseSensitive, Paintbrush, Banknote } from "lucide-react"
 
 const tools = [
   {
@@ -38,6 +37,41 @@ const tools = [
     description: "Get explanations for code snippets in plain English",
     icon: Code,
     href: "/ai-tools/code-explainer",
+    category: "AI Tools",
+  },
+  {
+    title: "Email Responder",
+    description: "Generate professional or casual replies to emails",
+    icon: Mail,
+    href: "/ai-tools/email-responder",
+    category: "AI Tools",
+  },
+  {
+    title: "Sentiment Analysis",
+    description: "Determine the tone of a piece of text",
+    icon: Smile,
+    href: "/ai-tools/sentiment-analysis",
+    category: "AI Tools",
+  },
+  {
+    title: "Keyword Extractor",
+    description: "Pull the most relevant keywords from a block of text",
+    icon: Tags,
+    href: "/ai-tools/keyword-extractor",
+    category: "AI Tools",
+  },
+  {
+    title: "Resume Bullet Points",
+    description: "Write impactful resume bullet points",
+    icon: FileText,
+    href: "/ai-tools/resume-bullet-points",
+    category: "AI Tools",
+  },
+  {
+    title: "Creative Name Generator",
+    description: "Generate names for businesses, projects, and more",
+    icon: Palette,
+    href: "/ai-tools/creative-name-generator",
     category: "AI Tools",
   },
   {
@@ -117,6 +151,48 @@ const tools = [
     href: "/utilities/pomodoro-timer",
     category: "Utilities",
   },
+/*   {
+    title: "PNR Status Checker",
+    description: "Check the status of your Indian Railways PNR",
+    icon: Train,
+    href: "/utilities/pnr-status-checker",
+    category: "Utilities",
+  }, */
+  {
+    title: "Time Zone Converter",
+    description: "Check and compare the time in different parts of the world",
+    icon: Clock10,
+    href: "/utilities/time-zone-converter",
+    category: "Utilities",
+  },
+  {
+    title: "Unit Converter",
+    description: "Convert various units of measurement",
+    icon: Ruler,
+    href: "/utilities/unit-converter",
+    category: "Utilities",
+  },
+  {
+    title: "Word Counter",
+    description: "Count words and characters in a piece of text",
+    icon: CaseSensitive,
+    href: "/utilities/word-counter",
+    category: "Utilities",
+  },
+  {
+    title: "Color Picker & Converter",
+    description: "Pick colors and convert them between HEX, RGB, and HSL formats",
+    icon: Paintbrush,
+    href: "/utilities/color-picker",
+    category: "Utilities",
+  },
+  {
+    title: "Loan Calculator",
+    description: "Calculate monthly payments for loans or mortgages",
+    icon: Banknote,
+    href: "/utilities/loan-calculator",
+    category: "Utilities",
+  },
   {
     title: "Dice Roller",
     description: "Roll virtual dice for board games and RPGs",
@@ -138,7 +214,35 @@ const tools = [
     href: "/games/2048",
     category: "Games",
   },
-  
+  {
+    title: "Tic-Tac-Toe",
+    description: "The classic game, playable against a friend or an AI",
+    icon: Gamepad2,
+    href: "/games/tic-tac-toe",
+    category: "Games",
+  },
+  {
+    title: "Memory Game",
+    description: "A card-matching game to test your memory",
+    icon: Gamepad2,
+    href: "/games/memory-game",
+    category: "Games",
+  },
+  {
+    title: "Hangman",
+    description: "The popular word-guessing game",
+    icon: Gamepad2,
+    href: "/games/hangman",
+    category: "Games",
+  },
+  {
+    title: "Snake",
+    description: "A simple implementation of the classic Snake game",
+    icon: Gamepad2,
+    href: "/games/snake",
+    category: "Games",
+  },
+
 ]
 
 // Group tools by category

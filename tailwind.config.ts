@@ -19,6 +19,13 @@ const config = {
       },
     },
     extend: {
+      backgroundImage: {
+        'light-mode': "url('/light-mode-bg.png')",
+        'dark-mode': "url('/dark-mode-bg.png')",
+      },
+      fontFamily: {
+        michroma: ['Michroma', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -79,4 +86,3 @@ const config = {
 } satisfies Config
 
 export default config
-

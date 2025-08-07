@@ -69,9 +69,45 @@ export function ImagePromptGenerator() {
     }
   }
 
+  const checkRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("promptGeneratorUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        if (usage.count >= 2) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const updateRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("promptGeneratorUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        usage.count++
+      } else {
+        usage.count = 1
+        usage.timestamp = now
+      }
+      localStorage.setItem("promptGeneratorUsage", JSON.stringify(usage))
+    }
+  }
+
   const generatePrompt = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!concept) return
+
+    if (!checkRateLimit()) {
+      toast({
+        title: "Rate Limit Exceeded",
+        description: "You can only generate prompts twice per day.",
+        variant: "destructive",
+      })
+      return
+    }
 
     setIsGenerating(true)
     setGeneratedPrompt("")
@@ -97,6 +133,7 @@ export function ImagePromptGenerator() {
       }
 
       setGeneratedPrompt(data.prompt)
+      updateRateLimit()
 
       // Add to history
       const newEntry: PromptHistory = {
