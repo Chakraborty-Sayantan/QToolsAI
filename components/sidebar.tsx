@@ -14,75 +14,80 @@ import { sidebarItems } from "@/lib/sidebar-data"
 export function Sidebar() {
   const pathname = usePathname()
   const [openSections, setOpenSections] = useState<string[]>([])
-  const [isResizing, setIsResizing] = useState(false)
-  const [sidebarWidth, setSidebarWidth] = useState(288)
   const sidebarRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const savedWidth = localStorage.getItem("sidebarWidth")
-    if (savedWidth) {
-      setSidebarWidth(Math.min(Math.max(Number(savedWidth), 200), 500))
-    }
-  }, [])
-
-  const startResizing = useCallback((mouseDownEvent: React.MouseEvent) => {
-    setIsResizing(true)
-    mouseDownEvent.preventDefault()
-  }, [])
-
-  const stopResizing = useCallback(() => {
-    setIsResizing(false)
-  }, [])
-
-  const resize = useCallback((mouseMoveEvent: MouseEvent) => {
-    if (isResizing) {
-      const newWidth = mouseMoveEvent.clientX
-      if (newWidth >= 200 && newWidth <= 500) { 
-        setSidebarWidth(newWidth)
-        localStorage.setItem("sidebarWidth", String(newWidth))
-      }
-    }
-  }, [isResizing])
-
-  useEffect(() => {
-    window.addEventListener("mousemove", resize)
-    window.addEventListener("mouseup", stopResizing)
-    return () => {
-      window.removeEventListener("mousemove", resize)
-      window.removeEventListener("mouseup", stopResizing)
-    }
-  }, [resize, stopResizing])
-  
-  useEffect(() => {
-    if (isResizing) {
-      document.body.style.cursor = 'col-resize';
-      document.body.style.userSelect = 'none';
-    } else {
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-    }
-  }, [isResizing])
 
   const toggleSection = (title: string) => {
     setOpenSections(prev =>
       prev.includes(title) ? prev.filter(t => t !== title) : [...prev, title]
     )
   }
+  
+  const handleMouseEnter = () => {
+    document.body.classList.add("sidebar-scrolling");
+    // Also add class to main content if you have a ref to it
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+      mainContent.classList.add('main-content-locked');
+    }
+  };
+
+  const handleMouseLeave = () => {
+    document.body.classList.remove("sidebar-scrolling");
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+      mainContent.classList.remove('main-content-locked');
+    }
+  };
+
+  // Handle wheel events on the sidebar
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (sidebarRef.current) {
+      e.stopPropagation();
+      // Allow the sidebar to scroll naturally
+      sidebarRef.current.scrollTop += e.deltaY;
+    }
+  }, []);
+
+  useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (document.querySelector('.sidebar-scrolling')) {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const scrollAmount = e.key === 'ArrowUp' ? -50 : 50;
+        if (sidebarRef.current) {
+          sidebarRef.current.scrollTop += scrollAmount;
+        }
+      }
+    }
+  };
+
+  document.addEventListener('keydown', handleKeyDown);
+  return () => {
+    document.removeEventListener('keydown', handleKeyDown);
+  };
+}, []);
 
   return (
     <div
-      className="hidden md:flex flex-col relative border-r border-neutral-800 dark:border-neutral-100 bg-#d9c8c5/80 dark:bg-#1e1f24/80 backdrop-blur-sm flex-shrink-0 overflow-hidden"
-      style={{ width: sidebarWidth }}
+      className="hidden md:flex flex-col relative w-72 border-r border-neutral-800 dark:border-neutral-100 bg-#d9c8c5/80 dark:bg-#1e1f24/80 backdrop-blur-sm flex-shrink-0"
     >
-      <div className="flex-1 flex flex-col gap-2 overflow-y-auto">
-        <div className="flex h-16 items-center justify-between  border-neutral-800 dark:border-neutral-100 px-4 flex-shrink-0">
+      <div className="flex-1 flex flex-col gap-2 h-screen">
+        {/* Fixed Header */}
+        <div className="flex h-16 items-center justify-between border-neutral-800 dark:border-neutral-100 px-4 flex-shrink-0">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <Image src="/LOGO1.png" alt="QToolsAI Logo" width={70} height={100} />
             <span className="text-lg font-bold font-michroma">QToolsAI</span>
           </Link>
           <ThemeToggle />
         </div>
-        <div className="flex-1 overflow-y-scroll py-2 scrollbar-thin scrollbar-thumb-neutral-400 dark:scrollbar-thumb-neutral-600 scrollbar-track-transparent">
+        
+        {/* Scrollable Content */}
+        <div 
+            ref={sidebarRef}
+            className="flex-1 overflow-y-auto py-2 sidebar-scroll"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
           <nav className="grid items-start px-2 text-sm font-medium">
             {sidebarItems.map((item, index) => {
               const isOpen = openSections.includes(item.title)
@@ -149,10 +154,6 @@ export function Sidebar() {
           </nav>
         </div>
       </div>
-      <div
-        className="absolute top-0 right-0 h-full w-2 cursor-col-resize bg-transparent hover:bg-primary/10 transition-colors"
-        onMouseDown={startResizing}
-      />
     </div>
   )
 }

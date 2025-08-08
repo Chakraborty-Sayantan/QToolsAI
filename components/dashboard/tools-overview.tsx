@@ -281,7 +281,7 @@ const itemVariants = {
 
 export function ToolsOverview() {
   return (
-    <div className="space-y-8 pt-6">
+    <div className="main-content space-y-8 pt-6">
       {Object.entries(groupedTools).map(([category, tools]) => (
         <div key={category}>
           <motion.h2
