@@ -1,34 +1,16 @@
 import { HfInference } from '@huggingface/inference'
+import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   const { text, sourceLanguage, targetLanguage } = await req.json()
 
   // Validate input text
   if (!text || text.trim().length < 2) {
-    return Response.json(
+    return NextResponse.json(
       { error: "Please provide at least 2 characters to translate" },
       { status: 400 }
     );
   }
-
-  // Get language names from codes
-  const languages: Record<string, string> = {
-    en: "English",
-    es: "Spanish",
-    fr: "French",
-    de: "German",
-    it: "Italian",
-    pt: "Portuguese",
-    ru: "Russian",
-    zh: "Chinese",
-    ja: "Japanese",
-    ko: "Korean",
-    ar: "Arabic",
-    hi: "Hindi",
-  }
-
-  const sourceLang = languages[sourceLanguage] || sourceLanguage
-  const targetLang = languages[targetLanguage] || targetLanguage
 
   try {
     const HF_API_KEY = process.env.HUGGINGFACE_API_KEY;
@@ -38,38 +20,45 @@ export async function POST(req: Request) {
 
     const hf = new HfInference(HF_API_KEY);
 
-    // Primary model for specific language pair
-    const model = `Helsinki-NLP/opus-mt-${sourceLanguage}-${targetLanguage}`;
-    // Fallback model for unsupported pairs
-    const fallbackModel = "Helsinki-NLP/opus-mt-mul-en";
-
+    // Define the model based on the language pair
+    let model = `Helsinki-NLP/opus-mt-${sourceLanguage}-${targetLanguage}`;
     let response;
+
     try {
-      // Try primary model first
+      // Try the direct model first
       response = await hf.translation({
         model,
         inputs: text,
       });
     } catch (primaryError) {
-      console.log(`Primary model failed, trying fallback: ${primaryError}`);
-      // Try fallback model if primary fails
+      console.warn(`Direct model ${model} failed. Trying fallbacks...`, primaryError);
+
+      // Fallback logic
+      if (targetLanguage === 'en') {
+        model = "Helsinki-NLP/opus-mt-mul-en"; // Many-to-English
+      } else if (sourceLanguage === 'en') {
+        model = "Helsinki-NLP/opus-mt-en-mul"; // English-to-Many
+      } else {
+        throw new Error("Direct translation model not available for this language pair.");
+      }
+      
+      console.log(`Using fallback model: ${model}`);
       response = await hf.translation({
-        model: fallbackModel,
+        model,
         inputs: text,
       });
     }
 
     if (!response?.translation_text) {
-      throw new Error("Invalid translation response");
+      throw new Error("Invalid translation response from the API");
     }
 
-    return Response.json({ translatedText: response.translation_text });
+    return NextResponse.json({ translatedText: response.translation_text });
   } catch (error) {
     console.error("Error translating text:", error);
-    return Response.json(
+    return NextResponse.json(
       { 
         error: error instanceof Error ? error.message : "Failed to translate text",
-        retry: true // Indicate that the user can retry
       },
       { status: 500 }
     );

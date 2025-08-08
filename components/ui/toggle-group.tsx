@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, forwardRef } from "react"
+import React, { createContext, useContext, forwardRef } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
@@ -14,13 +14,13 @@ type ToggleGroupContextValue = {
 const ToggleGroupContext = createContext<ToggleGroupContextValue | null>(null)
 
 /* ---------- Root Component ---------- */
-export const ToggleGroup = forwardRef<
-  HTMLDivElement,
+export const ToggleGroup = forwardRef
+  <HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> &
     VariantProps<typeof toggleGroupVariants> & {
       type?: "single" | "multiple"
       value?: string | string[] | null
-      onValueChange?: (value: string | string[]) => void // Allow string[] for multiple
+      onValueChange?: (value: string | string[]) => void 
     }
 >(({ className, type = "single", value = null, onValueChange = () => {}, ...props }, ref) => {
   const handleValueChange = (itemValue: string) => {
@@ -44,10 +44,10 @@ export const ToggleGroup = forwardRef<
 ToggleGroup.displayName = "ToggleGroup"
 
 /* ---------- Item Component ---------- */
-export const ToggleGroupItem = forwardRef<
-  HTMLButtonElement,
+export const ToggleGroupItem = forwardRef
+  <HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    value: string // Value is now a required string
+    value: string 
   }
 >(({ className, children, value, onClick, ...props }, ref) => {
   const ctx = useContext(ToggleGroupContext)

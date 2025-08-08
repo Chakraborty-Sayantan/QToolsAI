@@ -1,16 +1,16 @@
-"Use client"
+"use client"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { Hangman } from "@/components/games/hangman"
+import { motion } from "framer-motion"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { motion } from "framer-motion"
 
 /* export const metadata = {
   title: "Hangman | AI Toolkit",
   description: "The popular word-guessing game",
-} */
-
+}
+ */
 export default function HangmanPage() {
   return (
     <main className="relative">
@@ -33,7 +33,7 @@ export default function HangmanPage() {
       >
         <DashboardShell>
           <DashboardHeader
-            heading="Hangman Game"
+            heading="Hangman"
             text="The popular word-guessing game"
           />
           <div className="mt-6 max-w-full mx-auto px-2 sm:px-0">
