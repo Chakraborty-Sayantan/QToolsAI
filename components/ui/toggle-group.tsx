@@ -2,9 +2,8 @@
 
 import { createContext, useContext, forwardRef } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils" // your clsx/tailwind helper
+import { cn } from "@/lib/utils"
 
-/* ---------- ToggleGroup context ---------- */
 type ToggleGroupContext = {
   type: "single" | "multiple"
   value: string | string[] | null
@@ -12,7 +11,6 @@ type ToggleGroupContext = {
 }
 const ToggleGroupContext = createContext<ToggleGroupContext | null>(null)
 
-/* ---------- Root ---------- */
 export const ToggleGroup = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> &
@@ -28,22 +26,24 @@ export const ToggleGroup = forwardRef<
 ))
 ToggleGroup.displayName = "ToggleGroup"
 
-/* ---------- Item ---------- */
 export const ToggleGroupItem = forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, children, value, onClick, ...props }, ref) => {
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { value: string }
+>(({ className, children, value, ...props }, ref) => {
   const ctx = useContext(ToggleGroupContext)
   if (!ctx) throw new Error("ToggleGroupItem must be inside ToggleGroup")
 
-  const selected = ctx.type === "single" ? ctx.value === value : (ctx.value as string[])?.includes(value)
+  const selected =
+    ctx.type === "single"
+      ? ctx.value === value
+      : Array.isArray(ctx.value) && ctx.value.includes(value)
 
   return (
     <button
       ref={ref}
       type="button"
       data-state={selected ? "on" : "off"}
-      onClick={() => ctx.onValueChange(value!)}
+      onClick={() => ctx.onValueChange(value)}
       className={cn(
         "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
@@ -62,5 +62,4 @@ export const ToggleGroupItem = forwardRef<
 })
 ToggleGroupItem.displayName = "ToggleGroupItem"
 
-/* ---------- Variants ---------- */
 const toggleGroupVariants = cva("inline-flex items-center gap-1 rounded-md bg-muted/50 p-1")
