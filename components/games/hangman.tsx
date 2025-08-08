@@ -71,7 +71,7 @@ export function Hangman() {
     <Card className="bg-gradient-to-br from-sky-50 to-indigo-100 dark:from-sky-900 dark:to-indigo-900">
       <CardHeader>
         <CardTitle className="text-center text-3xl font-bold text-sky-700 dark:text-sky-300">Hangman</CardTitle>
-        <CardDescription className="text-center">Guess the word before it's too late!</CardDescription>
+        <CardDescription className="text-center">Guess the word before it&quots too late!</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col items-center">
         <HangmanDrawing />
@@ -96,7 +96,7 @@ export function Hangman() {
           ))}
         </div>
         {isWinner && <p className="text-center text-2xl font-bold text-green-600 dark:text-green-400">You won! 🎉</p>}
-        {isLoser && <p className="text-center text-2xl font-bold text-red-600 dark:text-red-400">You lost! The word was "{word.toUpperCase()}"</p>}
+        {isLoser && <p className="text-center text-2xl font-bold text-red-600 dark:text-red-400">You lost! The word was &quot{word.toUpperCase()}&quot</p>}
         <Button onClick={fetchWord} className="mt-4 w-full bg-sky-600 hover:bg-sky-700">
           New Game
         </Button>
