@@ -15,8 +15,43 @@ export function CreativeNameGenerator() {
   const [names, setNames] = useState("")
   const { toast } = useToast()
 
+  const checkRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("nameGeneratorUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        if (usage.count >= 2) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const updateRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("nameGeneratorUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        usage.count++
+      } else {
+        usage.count = 1
+        usage.timestamp = now
+      }
+      localStorage.setItem("nameGeneratorUsage", JSON.stringify(usage))
+    }
+  }
+
   const generateNames = async () => {
     if (!category || !keywords) return
+    if (!checkRateLimit()) {
+      toast({
+        title: "Rate Limit Exceeded",
+        description: "You can only generate names twice per day.",
+        variant: "destructive",
+      })
+      return
+    }
     setIsLoading(true)
     setNames("")
 
@@ -29,6 +64,7 @@ export function CreativeNameGenerator() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || "Failed to generate names")
       setNames(data.names)
+      updateRateLimit()
     } catch (error) {
       console.error("Error generating names:", error)
       toast({

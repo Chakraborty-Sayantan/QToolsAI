@@ -55,7 +55,7 @@ export function FeaturesSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mb-12 text-center text-3xl font-bold leading-tight tracking-tighter md:text-4xl"
+          className="mt-12 mb-12 text-center text-3xl font-bold leading-tight tracking-tighter md:text-4xl"
         >
           Powerful Features at Your Fingertips
         </motion.h2>

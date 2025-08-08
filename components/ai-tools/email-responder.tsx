@@ -38,9 +38,44 @@ export function EmailResponder() {
     }
   }
 
+  const checkRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("emailResponderUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        if (usage.count >= 2) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const updateRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("emailResponderUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        usage.count++
+      } else {
+        usage.count = 1
+        usage.timestamp = now
+      }
+      localStorage.setItem("emailResponderUsage", JSON.stringify(usage))
+    }
+  }
+
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault()
     if (!emailContent) return
+    if (!checkRateLimit()) {
+      toast({
+        title: "Rate Limit Exceeded",
+        description: "You can only generate email responses twice per day.",
+        variant: "destructive",
+      })
+      return
+    }
 
     setIsGenerating(true)
     setGeneratedResponse("")
@@ -59,6 +94,7 @@ export function EmailResponder() {
       }
 
       setGeneratedResponse(data.response)
+      updateRateLimit()
       const newEntry: EmailHistory = {
         emailContent,
         response: data.response,
@@ -126,17 +162,22 @@ export function EmailResponder() {
 
         {generatedResponse && (
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle>Generated Response</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="whitespace-pre-wrap rounded-md bg-muted p-4 line-clamp-3">{generatedResponse}</div>
-              <div className="mt-4 flex justify-end">
-                <Button onClick={() => copyToClipboard(generatedResponse)}>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => copyToClipboard(generatedResponse)}>
                   <Copy className="h-4 w-4 mr-2" />
                   Copy
                 </Button>
+                <DialogTrigger asChild>
+                  <Button size="sm" onClick={() => setSelectedEmail({ emailContent, response: generatedResponse, timestamp: Date.now() })}>
+                    Open
+                  </Button>
+                </DialogTrigger>
               </div>
+            </CardHeader>
+            <CardContent>
+              <div className="whitespace-pre-wrap rounded-md bg-muted p-4 line-clamp-3">{generatedResponse}</div>
             </CardContent>
           </Card>
         )}

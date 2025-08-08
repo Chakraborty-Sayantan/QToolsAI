@@ -1,3 +1,5 @@
+"use client"
+import { motion } from "framer-motion"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -254,35 +256,72 @@ const groupedTools = tools.reduce((acc, tool) => {
   return acc
 }, {} as Record<string, typeof tools>)
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 10
+    }
+  }
+};
+
 export function ToolsOverview() {
   return (
     <div className="space-y-8 pt-6">
       {Object.entries(groupedTools).map(([category, tools]) => (
         <div key={category}>
-          <h2 className="text-2xl font-bold mb-4">{category}</h2>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl font-bold mb-4"
+          >
+            {category}
+          </motion.h2>
+          <motion.div
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {tools.map((tool) => (
-              <Card key={tool.href} className="flex flex-col">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <div className="rounded-md bg-primary/10 p-2">
-                      <tool.icon className="h-5 w-5 text-primary" />
+              <motion.div key={tool.href} variants={itemVariants}>
+                <Card className="flex flex-col h-full">
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <div className="rounded-md bg-primary/10 p-2">
+                        <tool.icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <CardTitle className="text-xl">{tool.title}</CardTitle>
                     </div>
-                    <CardTitle className="text-xl">{tool.title}</CardTitle>
-                  </div>
-                  <CardDescription>{tool.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <div className="text-sm text-muted-foreground">Category: {tool.category}</div>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild className="w-full">
-                    <Link href={tool.href}>Open Tool</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+                    <CardDescription>{tool.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <div className="text-sm text-muted-foreground">Category: {tool.category}</div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button asChild className="w-full">
+                      <Link href={tool.href}>Open Tool</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       ))}
     </div>

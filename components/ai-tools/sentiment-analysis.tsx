@@ -14,8 +14,43 @@ export function SentimentAnalysis() {
   const [sentiment, setSentiment] = useState<string | null>(null)
   const { toast } = useToast()
 
+  const checkRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("sentimentAnalysisUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        if (usage.count >= 2) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const updateRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("sentimentAnalysisUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        usage.count++
+      } else {
+        usage.count = 1
+        usage.timestamp = now
+      }
+      localStorage.setItem("sentimentAnalysisUsage", JSON.stringify(usage))
+    }
+  }
+
   const analyzeSentiment = async () => {
     if (!text) return
+    if (!checkRateLimit()) {
+      toast({
+        title: "Rate Limit Exceeded",
+        description: "You can only analyze sentiment twice per day.",
+        variant: "destructive",
+      })
+      return
+    }
     setIsLoading(true)
     setSentiment(null)
 
@@ -28,6 +63,7 @@ export function SentimentAnalysis() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || "Failed to analyze sentiment")
       setSentiment(data.sentiment)
+      updateRateLimit()
     } catch (error) {
       console.error("Error analyzing sentiment:", error)
       toast({

@@ -38,6 +38,33 @@ export function CodeExplainer() {
   const [copied, setCopied] = useState(false)
   const { toast } = useToast()
 
+  const checkRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("codeExplainerUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        if (usage.count >= 2) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const updateRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("codeExplainerUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        usage.count++
+      } else {
+        usage.count = 1
+        usage.timestamp = now
+      }
+      localStorage.setItem("codeExplainerUsage", JSON.stringify(usage))
+    }
+  }
+
   const explainCode = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -46,6 +73,15 @@ export function CodeExplainer() {
       toast({
         title: "Input Error",
         description: "Please provide at least 10 characters of code to explain",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!checkRateLimit()) {
+      toast({
+        title: "Rate Limit Exceeded",
+        description: "You can only generate explanations twice per day.",
         variant: "destructive",
       })
       return
@@ -74,6 +110,7 @@ export function CodeExplainer() {
       }
 
       setExplanation(data.explanation)
+      updateRateLimit()
     } catch (error) {
       console.error("Error explaining code:", error)
       toast({

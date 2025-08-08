@@ -14,8 +14,43 @@ export function KeywordExtractor() {
   const [keywords, setKeywords] = useState<string[]>([])
   const { toast } = useToast()
 
+  const checkRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("keywordExtractorUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        if (usage.count >= 2) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const updateRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("keywordExtractorUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        usage.count++
+      } else {
+        usage.count = 1
+        usage.timestamp = now
+      }
+      localStorage.setItem("keywordExtractorUsage", JSON.stringify(usage))
+    }
+  }
+
   const extractKeywords = async () => {
     if (!text) return
+    if (!checkRateLimit()) {
+      toast({
+        title: "Rate Limit Exceeded",
+        description: "You can only extract keywords twice per day.",
+        variant: "destructive",
+      })
+      return
+    }
     setIsLoading(true)
     setKeywords([])
 
@@ -28,6 +63,7 @@ export function KeywordExtractor() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || "Failed to extract keywords")
       setKeywords(data.keywords.split(",").map((kw: string) => kw.trim()))
+      updateRateLimit()
     } catch (error) {
       console.error("Error extracting keywords:", error)
       toast({

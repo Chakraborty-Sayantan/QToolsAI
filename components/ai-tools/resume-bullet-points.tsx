@@ -15,8 +15,43 @@ export function ResumeBulletPoints() {
   const [bulletPoints, setBulletPoints] = useState("")
   const { toast } = useToast()
 
+  const checkRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("resumePointsUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        if (usage.count >= 2) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const updateRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("resumePointsUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        usage.count++
+      } else {
+        usage.count = 1
+        usage.timestamp = now
+      }
+      localStorage.setItem("resumePointsUsage", JSON.stringify(usage))
+    }
+  }
+
   const generatePoints = async () => {
     if (!jobDescription || !userExperience) return
+    if (!checkRateLimit()) {
+      toast({
+        title: "Rate Limit Exceeded",
+        description: "You can only generate bullet points twice per day.",
+        variant: "destructive",
+      })
+      return
+    }
     setIsLoading(true)
     setBulletPoints("")
 
@@ -29,6 +64,7 @@ export function ResumeBulletPoints() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || "Failed to generate points")
       setBulletPoints(data.bulletPoints)
+      updateRateLimit()
     } catch (error) {
       console.error("Error generating points:", error)
       toast({

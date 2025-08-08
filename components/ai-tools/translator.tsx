@@ -34,6 +34,33 @@ export function Translator() {
   const [copied, setCopied] = useState(false)
   const { toast } = useToast()
 
+  const checkRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("translatorUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        if (usage.count >= 2) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const updateRateLimit = () => {
+    if (typeof window !== "undefined") {
+      const usage = JSON.parse(localStorage.getItem("translatorUsage") || "{}")
+      const now = new Date().getTime()
+      if (usage.timestamp && now - usage.timestamp < 24 * 60 * 60 * 1000) {
+        usage.count++
+      } else {
+        usage.count = 1
+        usage.timestamp = now
+      }
+      localStorage.setItem("translatorUsage", JSON.stringify(usage))
+    }
+  }
+
   async function handleTranslate(e: React.FormEvent) {
     e.preventDefault()
     
@@ -42,6 +69,15 @@ export function Translator() {
       toast({
         title: "Input Error",
         description: "Please enter at least 2 characters to translate",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!checkRateLimit()) {
+      toast({
+        title: "Rate Limit Exceeded",
+        description: "You can only generate translations twice per day.",
         variant: "destructive",
       })
       return
@@ -70,6 +106,7 @@ export function Translator() {
       }
 
       setTranslatedText(data.translatedText)
+      updateRateLimit()
     } catch (error) {
       console.error("Error translating text:", error)
       

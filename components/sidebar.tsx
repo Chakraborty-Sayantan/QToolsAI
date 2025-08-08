@@ -72,11 +72,11 @@ export function Sidebar() {
   return (
     <div
       ref={sidebarRef}
-      className="hidden md:flex relative border-r bg-background/80 dark:bg-slate-900/80 backdrop-blur-sm flex-shrink-0"
+      className="hidden md:flex relative border-r border-neutral-800 dark:border-neutral-100 bg-#d9c8c5/80 dark:bg-#1e1f24/80 backdrop-blur-sm flex-shrink-0"
       style={{ width: sidebarWidth }}
     >
       <div className="flex-1 flex flex-col gap-2 overflow-y-hidden">
-        <div className="flex h-16 items-center justify-between border-b px-4 flex-shrink-0">
+        <div className="flex h-16 items-center justify-between  border-neutral-800 dark:border-neutral-100 px-4 flex-shrink-0">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <Image src="/LOGO1.png" alt="QToolsAI Logo" width={70} height={100} />
             <span className="text-lg font-bold font-michroma">QToolsAI</span>
