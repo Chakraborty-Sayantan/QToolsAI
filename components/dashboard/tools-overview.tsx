@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Braces, Cloud, QrCode, Sparkles, Zap, Image, Code, Calendar, Clock, Plane, DollarSign, Activity, Newspaper, KeyRound, Link2, Timer, Gamepad2, Mail, Smile, Tags, FileText, Palette, /* Train, */ Clock10, Ruler, CaseSensitive, Paintbrush, Banknote } from "lucide-react"
+import { Braces, Cloud, QrCode, Sparkles, Zap, Image, Code, Calendar, Clock, Plane, DollarSign, Activity, /* Newspaper, */ KeyRound, Link2, Timer, Gamepad2, Mail, Smile, Tags, FileText, Palette, /* Train, */ Clock10, Ruler, CaseSensitive, Paintbrush, Banknote } from "lucide-react"
 
 const tools = [
   {
@@ -125,13 +125,13 @@ const tools = [
     href: "/utilities/bmi-calculator",
     category: "Utilities",
   },
-  {
+ /*  {
     title: "Daily News",
     description: "Stay updated with the latest news",
     icon: Newspaper,
     href: "/utilities/daily-news",
     category: "Utilities",
-  },
+  }, */
   {
     title: "Password Generator",
     description: "Generate secure, random passwords",

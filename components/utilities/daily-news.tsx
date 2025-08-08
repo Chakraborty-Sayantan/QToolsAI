@@ -1,8 +1,8 @@
-"use client"
+/* "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useCallback } from "react"
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,25 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Newspaper, Search, ExternalLink, Loader2 } from "lucide-react"
 
-interface NewsAPIArticle {
-  source: {
-    id: string | null
-    name: string
-  }
-  title: string
-  description: string
-  author: string
-  url: string
-  urlToImage: string
-  publishedAt: string
-}
-
 interface NewsArticle {
   id: string
   title: string
   description: string
   source: { name: string }
-  author: string
+  author: string | null
   url: string
   urlToImage: string
   publishedAt: string
@@ -50,100 +37,53 @@ export function DailyNews() {
   const [activeTab, setActiveTab] = useState("top-headlines")
   const [selectedCategory, setSelectedCategory] = useState("general")
   const [searchQuery, setSearchQuery] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [articles, setArticles] = useState<NewsArticle[]>([])
   const [error, setError] = useState<string>("")
-  const [apiKey, setApiKey] = useState<string | null>(null)
 
-  // Initialize API key
-  useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_NEWS_API_KEY
-    setApiKey(key || null)
-    if (!key) {
-      setError("API key not found. Please check your environment configuration.")
-    }
-  }, [])
-
-  const fetchTopHeadlines = useCallback(async (category: string) => {
-    if (!apiKey) {
-      setError("API key not found. Please check your environment configuration.")
-      return
-    }
-
+  const fetchNews = useCallback(async (params: URLSearchParams) => {
     setIsLoading(true)
     setError("")
 
     try {
-      const response = await fetch(
-        `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${apiKey}`
-      )
+      const response = await fetch(`/api/news?${params.toString()}`)
       const data = await response.json()
 
-      if (data.status === "ok") {
-        const formattedArticles = data.articles.map((article: NewsAPIArticle, index: number) => ({
-          id: `${article.source.id || 'news'}-${index}-${Date.now()}`,
-          title: article.title,
-          description: article.description,
-          source: article.source,
-          author: article.author,
-          url: article.url,
-          urlToImage: article.urlToImage || '/placeholder.svg?height=200&width=300&text=News+Image',
-          publishedAt: article.publishedAt,
-          category: category
-        }))
-        setArticles(formattedArticles)
-      } else {
-        throw new Error(data.message || "Failed to fetch news")
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch news")
       }
+      setArticles(data.articles)
     } catch (err) {
       console.error("Error fetching news:", err)
       setError(err instanceof Error ? err.message : "Failed to fetch news. Please try again later.")
+      setArticles([])
     } finally {
       setIsLoading(false)
     }
-  }, [apiKey])
+  }, [])
 
   useEffect(() => {
-    if (activeTab === "top-headlines" && apiKey) {
-      fetchTopHeadlines(selectedCategory)
+    if (activeTab === "top-headlines") {
+      const params = new URLSearchParams({
+        endpoint: "top-headlines",
+        category: selectedCategory,
+      })
+      fetchNews(params)
+    } else {
+      // Clear articles when switching to the search tab until a search is performed
+      setArticles([])
+      setIsLoading(false)
     }
-  }, [selectedCategory, activeTab, apiKey, fetchTopHeadlines])
+  }, [selectedCategory, activeTab, fetchNews])
 
   async function searchNews(e: React.FormEvent) {
     e.preventDefault()
-    if (!searchQuery || !apiKey) return
-
-    setIsLoading(true)
-    setError("")
-
-    try {
-      const response = await fetch(
-        `https://newsapi.org/v2/everything?q=${encodeURIComponent(searchQuery)}&sortBy=publishedAt&apiKey=${apiKey}`
-      )
-      const data = await response.json()
-
-      if (data.status === "ok") {
-        const formattedArticles = data.articles.map((article: NewsAPIArticle, index: number) => ({
-          id: `${article.source.id || 'news'}-${index}-${Date.now()}`,
-          title: article.title,
-          description: article.description,
-          source: article.source,
-          author: article.author,
-          url: article.url,
-          urlToImage: article.urlToImage || '/placeholder.svg?height=200&width=300&text=News+Image',
-          publishedAt: article.publishedAt,
-          category: "search"
-        }))
-        setArticles(formattedArticles)
-      } else {
-        throw new Error(data.message || "Failed to fetch news")
-      }
-    } catch (err) {
-      console.error("Error searching news:", err)
-      setError(err instanceof Error ? err.message : "Failed to search news. Please try again later.")
-    } finally {
-      setIsLoading(false)
-    }
+    if (!searchQuery) return
+    const params = new URLSearchParams({
+      endpoint: "search",
+      q: searchQuery,
+    })
+    fetchNews(params)
   }
 
   function formatPublishedDate(dateString: string): string {
@@ -205,7 +145,11 @@ export function DailyNews() {
                       className="flex-1"
                     />
                     <Button type="submit" disabled={isLoading || !searchQuery}>
-                      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                      {isLoading && activeTab === "search" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Search className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -229,57 +173,54 @@ export function DailyNews() {
             </div>
           </div>
         ) : articles.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {articles.map((article) => (
-                <Card key={article.id} className="flex flex-col overflow-hidden">
-                  <div className="relative h-48 w-full">
-                    <img
-                      src={article.urlToImage}
-                      alt={article.title}
-                      className="h-full w-full object-cover"
-                    />
-                    <div className="absolute top-2 right-2 rounded-full bg-primary px-2 py-1 text-xs font-medium text-primary-foreground">
-                      {categories.find((c) => c.value === article.category)?.label || article.category}
-                    </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((article) => (
+              <Card key={article.id} className="flex flex-col overflow-hidden">
+                <div className="relative h-48 w-full">
+                  <Image
+                    src={article.urlToImage}
+                    alt={article.title}
+                    fill={true}
+                    style={{objectFit: 'cover'}}
+                    className="bg-muted"
+                  />
+                  <div className="absolute top-2 right-2 rounded-full bg-primary px-2 py-1 text-xs font-medium text-primary-foreground capitalize">
+                    {categories.find((c) => c.value === article.category)?.label || article.category}
                   </div>
-                  <CardHeader className="p-4">
-                    <CardTitle className="line-clamp-2 text-lg">{article.title}</CardTitle>
-                    <CardDescription className="flex items-center justify-between">
-                      <span>{article.source.name}</span>
-                      <span>{formatPublishedDate(article.publishedAt)}</span>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-1 p-4 pt-0">
-                    <p className="line-clamp-3 text-sm text-muted-foreground">{article.description}</p>
-                  </CardContent>
-                  <CardFooter className="p-4 pt-0">
-                    <Button variant="outline" className="w-full" asChild>
-                      <a href={article.url} target="_blank" rel="noopener noreferrer">
-                        Read More <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-
-            <div className="flex justify-center">
-              <Button variant="outline">Load More</Button>
-            </div>
-          </>
-        ) : (
-          <div className="flex h-64 items-center justify-center">
-            <div className="text-center">
-              <Newspaper className="mx-auto h-10 w-10 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">
-                No news articles found. Try a different search or category.
-              </p>
-            </div>
+                </div>
+                <CardHeader className="p-4">
+                  <CardTitle className="line-clamp-2 text-lg">{article.title}</CardTitle>
+                  <CardDescription className="flex items-center justify-between text-xs">
+                    <span>{article.source.name}</span>
+                    <span>{formatPublishedDate(article.publishedAt)}</span>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 p-4 pt-0">
+                  <p className="line-clamp-3 text-sm text-muted-foreground">{article.description}</p>
+                </CardContent>
+                <CardFooter className="p-4 pt-0">
+                  <Button variant="outline" className="w-full" asChild>
+                    <a href={article.url} target="_blank" rel="noopener noreferrer">
+                      Read More <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
           </div>
+        ) : (
+          !error && (
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-center">
+                <Newspaper className="mx-auto h-10 w-10 text-muted-foreground" />
+                <p className="mt-2 text-sm text-muted-foreground">
+                  No news articles found. Try a different search or category.
+                </p>
+              </div>
+            </div>
+          )
         )}
       </div>
     </div>
   )
-}
-
+} */

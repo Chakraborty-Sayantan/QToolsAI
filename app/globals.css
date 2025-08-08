@@ -78,8 +78,9 @@
   * {
     @apply border-border;
   }
-  body {
-    @apply text-foreground;
+  body :has(.tools-overview-wrapper) {
+  overflow: hidden;
+  @apply text-foreground;
   }
 
   /* Apply the image for light mode */

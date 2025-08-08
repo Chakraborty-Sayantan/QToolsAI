@@ -71,11 +71,10 @@ export function Sidebar() {
 
   return (
     <div
-      ref={sidebarRef}
-      className="hidden md:flex relative border-r border-neutral-800 dark:border-neutral-100 bg-#d9c8c5/80 dark:bg-#1e1f24/80 backdrop-blur-sm flex-shrink-0"
+      className="hidden md:flex flex-col relative border-r border-neutral-800 dark:border-neutral-100 bg-#d9c8c5/80 dark:bg-#1e1f24/80 backdrop-blur-sm flex-shrink-0 overflow-hidden"
       style={{ width: sidebarWidth }}
     >
-      <div className="flex-1 flex flex-col gap-2 overflow-y-hidden">
+      <div className="flex-1 flex flex-col gap-2 overflow-y-auto">
         <div className="flex h-16 items-center justify-between  border-neutral-800 dark:border-neutral-100 px-4 flex-shrink-0">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <Image src="/LOGO1.png" alt="QToolsAI Logo" width={70} height={100} />
@@ -83,7 +82,7 @@ export function Sidebar() {
           </Link>
           <ThemeToggle />
         </div>
-        <div className="flex-1 overflow-y-auto py-2">
+        <div className="flex-1 overflow-y-scroll py-2 scrollbar-thin scrollbar-thumb-neutral-400 dark:scrollbar-thumb-neutral-600 scrollbar-track-transparent">
           <nav className="grid items-start px-2 text-sm font-medium">
             {sidebarItems.map((item, index) => {
               const isOpen = openSections.includes(item.title)

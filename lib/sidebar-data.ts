@@ -1,5 +1,5 @@
-import {  Braces,  Cloud,  Gamepad2,  Home,  Settings,  Sparkles,  Zap,  Calendar,  Clock,  Plane,  DollarSign,  Activity,
-  Newspaper,  KeyRound,  Link2,  Timer,  Image,  Code,  Mail,  Smile,  Tags,  FileText,  Palette,  /* Train, */  Clock10,
+import {  Braces,  Cloud,  Gamepad2,  Home,  /* Settings, */  Sparkles,  Zap,  Calendar,  Clock,  Plane,  DollarSign,  Activity,
+  /* Newspaper, */  KeyRound,  Link2,  Timer,  Image,  Code,  Mail,  Smile,  Tags,  FileText,  Palette,  /* Train, */  Clock10,
   Ruler,  CaseSensitive,  Paintbrush,  Banknote} from "lucide-react"
 
 export const sidebarItems = [
@@ -35,7 +35,7 @@ export const sidebarItems = [
       { title: "Flight Tracker", href: "/utilities/flight-tracker", icon: Plane },
       { title: "Currency Converter", href: "/utilities/currency-converter", icon: DollarSign },
       { title: "BMI Calculator", href: "/utilities/bmi-calculator", icon: Activity },
-      { title: "Daily News", href: "/utilities/daily-news", icon: Newspaper },
+      /* { title: "Daily News", href: "/utilities/daily-news", icon: Newspaper }, */
       { title: "Password Generator", href: "/utilities/password-generator", icon: KeyRound },
       { title: "URL Shortener", href: "/utilities/url-shortener", icon: Link2 },
       { title: "Pomodoro Timer", href: "/utilities/pomodoro-timer", icon: Timer },
@@ -60,9 +60,9 @@ export const sidebarItems = [
       { title: "Snake", href: "/games/snake", icon: Gamepad2 },
     ],
   },
-  {
+  /* {
     title: "Settings",
     icon: Settings,
     items: [],
-  },
+  }, */
 ]

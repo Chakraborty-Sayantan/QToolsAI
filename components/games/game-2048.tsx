@@ -31,6 +31,7 @@ export function Game2048() {
     won: false,
   })
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null)
+  const [mouseStart, setMouseStart] = useState<{ x: number; y: number } | null>(null)
 
   // Initialize game
   useEffect(() => {
@@ -121,6 +122,37 @@ export function Game2048() {
     }
 
     setTouchStart(null)
+  }
+
+  // Handle mouse events for desktop
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setMouseStart({ x: e.clientX, y: e.clientY })
+  }
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!mouseStart) return
+
+    const deltaX = e.clientX - mouseStart.x
+    const deltaY = e.clientY - mouseStart.y
+
+    // Determine drag direction
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // Horizontal drag
+      if (deltaX > 20) {
+        move("right")
+      } else if (deltaX < -20) {
+        move("left")
+      }
+    } else {
+      // Vertical drag
+      if (deltaY > 20) {
+        move("down")
+      } else if (deltaY < -20) {
+        move("up")
+      }
+    }
+
+    setMouseStart(null)
   }
 
   // Add a random tile (2 or 4) to an empty cell
@@ -365,6 +397,8 @@ export function Game2048() {
             className="bg-gray-100 rounded-lg p-2 mb-4 select-none"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
           >
             <div className="grid grid-cols-4 gap-2">
               {gameState.board.flat().map((value, index) => (
@@ -449,4 +483,3 @@ export function Game2048() {
     </div>
   )
 }
-

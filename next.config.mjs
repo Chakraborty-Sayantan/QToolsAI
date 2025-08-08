@@ -20,6 +20,21 @@ const nextConfig = {
         hostname: 'openweathermap.org',
         pathname: '/img/wn/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'newsdata.io',
+        pathname: '/images/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.pixabay.com',
+        pathname: '/photo/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/photo-**',
+      },
     ],
   },
 };
