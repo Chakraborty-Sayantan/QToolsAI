@@ -236,7 +236,7 @@ export function ContentGeneratorForm() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="whitespace-pre-wrap rounded-md bg-muted p-4 line-clamp-3">{generatedContent}</div>
+              <div className="whitespace-pre-wrap rounded-md bg-muted p-4">{generatedContent}</div>
             </CardContent>
           </Card>
         )}
