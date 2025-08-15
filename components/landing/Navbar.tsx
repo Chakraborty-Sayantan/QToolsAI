@@ -139,7 +139,7 @@ export function Navbar() {
               height={40}
               className="rounded-full"
             />
-            <span className="text-lg font-bold font-michroma">QToolsAI</span>
+            <span className="text-lg pl-2 font-bold font-michroma">QToolsAI</span>
           </Link>
 
           {/* Right: Empty space to balance layout */}

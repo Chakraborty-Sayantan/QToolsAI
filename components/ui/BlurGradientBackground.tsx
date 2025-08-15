@@ -23,7 +23,7 @@ export function BlurGradientBackground() {
     if (theme === 'dark') {
       import('@/lib/BlurGradientBg.module.js').then(({ BlurGradientBg }) => {
         backgroundRef.current = new BlurGradientBg({
-          dom: "background-gradient",
+          dom: "background-gradient" as any,
           colors: ["#000000", "#454545", "#000000", "#292929"],
           loop: true
         });
@@ -31,7 +31,7 @@ export function BlurGradientBackground() {
     } else if (theme === 'light') {
       import('@/lib/AbstractShapeBg.module.js').then(({ AbstractShapeBg }) => {
         backgroundRef.current = new AbstractShapeBg({
-          dom: "background-gradient",
+          dom: "background-gradient" as any,
           colors: ["#f5f5f5", "#c4c0c0", "#e8e8e8", "#ebebeb", "#f0f0f0", "#ffffff"],
           loop: true
         });
