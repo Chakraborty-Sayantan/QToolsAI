@@ -86,7 +86,7 @@ export function HeroSection() {
               textShadow: "0 0 8px rgba(255, 255, 255, 0.5)",
               transition: { duration: 0.3 },
             }}
-            className="text-4xl font-bold text-primary font-michroma"
+            className="text-5xl font-bold text-primary font-michroma"
           >
             {"QTools".split("").map((char, idx) => (
               <motion.span key={idx} variants={letterAnimation} className="inline-block">
@@ -99,7 +99,7 @@ export function HeroSection() {
               textShadow: "0 0 8px rgba(255, 255, 255, 0.5)",
               transition: { duration: 0.3 },
             }}
-            className="text-3xl font-bold text-primary font-michroma"
+            className="text-5xl font-bold text-primary font-michroma"
           >
             {"AI".split("").map((char, idx) => (
               <motion.span key={idx} variants={letterAnimation} className="inline-block">
@@ -118,7 +118,7 @@ export function HeroSection() {
             textShadow: "0 0 8px rgba(255, 255, 255, 0.5)",
             transition: { duration: 0.3 },
           }}
-          className="hidden sm:flex text-[100px] md:text-[80px] font-bold text-primary font-michroma tracking-tighter pb-8"
+          className="hidden sm:flex text-[120px] md:text-[100px] font-bold text-primary font-michroma tracking-tighter pb-8"
         >
           {"QTools AI".split("").map((char, idx) => (
             <motion.span key={idx} variants={letterAnimation} className="inline-block">
@@ -132,7 +132,7 @@ export function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="text-3xl font-bold leading-tight tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl"
+          className="text-2xl font-bold leading-tight tracking-tighter sm:text-3xl md:text-4xl lg:text-5xl pt-2"
         >
           Your Complete{" "}
           <span className="text-primary">AI-Powered</span> Toolkit
@@ -140,7 +140,7 @@ export function HeroSection() {
 
         <motion.p
           variants={fadeInUp}
-          className="max-w-[700px] text-lg text-muted-foreground md:text-xl"
+          className="max-w-[700px] pt-2 t-lg text-muted-foreground md:text-xl"
         >
           Access dozens of intelligent tools and utilities to boost your
           productivity and creativity.

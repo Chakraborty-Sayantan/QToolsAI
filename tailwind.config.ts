@@ -19,10 +19,7 @@ const config = {
       },
     },
     extend: {
-      backgroundImage: {
-        'light-mode': "url('/light-mode-bg.png')",
-        'dark-mode': "url('/dark-mode-bg.png')",
-      },
+      
       fontFamily: {
         michroma: ['Michroma', 'sans-serif'],
       },

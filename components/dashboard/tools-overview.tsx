@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Braces, Cloud, QrCode, Sparkles, Zap, Image, Code, Calendar, Clock, Plane, DollarSign, Activity, /* Newspaper, */ KeyRound, Link2, Timer, Gamepad2, Mail, Smile, Tags, FileText, Palette, /* Train, */ Clock10, Ruler, CaseSensitive, Paintbrush, Banknote } from "lucide-react"
 
 const tools = [
+ 
   {
     title: "Content Generator",
     description: "Generate high-quality content for blogs, social media, and more",
@@ -125,13 +126,6 @@ const tools = [
     href: "/utilities/bmi-calculator",
     category: "Utilities",
   },
- /*  {
-    title: "Daily News",
-    description: "Stay updated with the latest news",
-    icon: Newspaper,
-    href: "/utilities/daily-news",
-    category: "Utilities",
-  }, */
   {
     title: "Password Generator",
     description: "Generate secure, random passwords",
@@ -153,13 +147,6 @@ const tools = [
     href: "/utilities/pomodoro-timer",
     category: "Utilities",
   },
-/*   {
-    title: "PNR Status Checker",
-    description: "Check the status of your Indian Railways PNR",
-    icon: Train,
-    href: "/utilities/pnr-status-checker",
-    category: "Utilities",
-  }, */
   {
     title: "Time Zone Converter",
     description: "Check and compare the time in different parts of the world",
@@ -244,7 +231,6 @@ const tools = [
     href: "/games/snake",
     category: "Games",
   },
-
 ]
 
 // Group tools by category
@@ -272,18 +258,18 @@ const itemVariants = {
     y: 0,
     opacity: 1,
     transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 10
+      type: "tween",
+      ease: "easeOut",
+      duration: 0.5
     }
   }
 };
 
 export function ToolsOverview() {
   return (
-    <div className="main-content space-y-8 pt-6">
-      {Object.entries(groupedTools).map(([category, tools]) => (
-        <div key={category}>
+    <div className="main-content pt-6"> 
+      {Object.entries(groupedTools).map(([category, tools], index) => ( 
+        <div key={category} className={index > 0 ? "mt-16" : ""}> 
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -299,22 +285,30 @@ export function ToolsOverview() {
             animate="visible"
           >
             {tools.map((tool) => (
-              <motion.div key={tool.href} variants={itemVariants}>
-                <Card className="flex flex-col h-full">
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <div className="rounded-md bg-primary/10 p-2">
-                        <tool.icon className="h-5 w-5 text-primary" />
-                      </div>
-                      <CardTitle className="text-xl">{tool.title}</CardTitle>
-                    </div>
-                    <CardDescription>{tool.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-1">
-                    <div className="text-sm text-muted-foreground">Category: {tool.category}</div>
+              <motion.div 
+                key={tool.href} 
+                variants={itemVariants}
+                whileHover={{ y: -5, scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <Card className="relative flex flex-col items-center justify-center h-full pt-16 transition-shadow duration-300 hover:shadow-lg dark:hover:shadow-primary/20">
+                  {/* Top colored rectangle */}
+                  <div className="absolute top-0 w-full h-1/3 rounded-t-xl bg-gradient-to-b from-white/70 to-black/70 dark:from-black/70 dark:to-white/10 backdrop-blur-md" />
+
+                  {/* Icon Circle */}
+                  <div className="absolute top-12 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex h-24 w-24 items-center justify-center rounded-full bg-black-500/80 dark:bg-black-500/80">
+                    <tool.icon className="h-10 w-10 text-white" />
+                  </div>
+
+                  {/* Card Content with Title & Description */}
+                  <CardContent className="mt-12 text-center">
+                    <CardTitle className="text-2xl font-bold">{tool.title}</CardTitle>
+                    <CardDescription className="mt-2 text-balance">{tool.description}</CardDescription>
                   </CardContent>
-                  <CardFooter>
-                    <Button asChild className="w-full">
+
+                  {/* Footer with buttons */}
+                  <CardFooter className="mt-4 flex w-full justify-center gap-2">
+                    <Button asChild>
                       <Link href={tool.href}>Open Tool</Link>
                     </Button>
                   </CardFooter>
