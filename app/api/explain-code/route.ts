@@ -1,6 +1,36 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Ratelimit } from "@upstash/ratelimit";
+import { kv } from "@vercel/kv";
+import { NextRequest } from "next/server";
 
-export async function POST(req: Request) {
+// Initialize the rate limiter to allow 5 requests per 10 seconds for each IP address.
+const ratelimit = new Ratelimit({
+  redis: kv,
+  limiter: Ratelimit.slidingWindow(5, "10 s"),
+  analytics: true,
+});
+
+export async function POST(req: NextRequest) {
+  // 1. Rate Limiting
+  const ip = req.ip ?? "127.0.0.1";
+  const { success, limit, remaining, reset } = await ratelimit.limit(ip);
+
+  if (!success) {
+    return new Response("You have reached your request limit.", {
+      status: 429,
+      headers: {
+        "X-RateLimit-Limit": limit.toString(),
+        "X-RateLimit-Remaining": remaining.toString(),
+        "X-RateLimit-Reset": reset.toString(),
+      },
+    });
+  }
+
+  // 2. API Key Authentication
+  const apiKey = req.headers.get("x-api-key");
+  if (apiKey !== process.env.INTERNAL_API_KEY) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { code, language, level } = await req.json();
 
   if (!code || code.trim().length < 10) {
