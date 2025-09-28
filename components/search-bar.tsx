@@ -10,7 +10,7 @@ export function SearchBar() {
     <Button
   variant="outline"
   onClick={open}
-  className="relative flex h-9 w-full border-2 border-black dark:border-white items-center justify-between rounded-md  px-3 text-sm text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus:ring-0 sm:w-64"
+  className="relative flex h-9 w-full border-1 border-black dark:border-white items-center justify-between rounded-full  px-3 text-sm text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus:ring-0 sm:w-64"
 >
   <span>Search tools</span>
 

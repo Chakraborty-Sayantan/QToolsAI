@@ -95,6 +95,7 @@ export function CodeExplainer() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-api-key": "your_super_secret_api_key",
         },
         body: JSON.stringify({
           code,

@@ -52,6 +52,8 @@ export function Navbar() {
   const navLinks = [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Features", href: "#features" },
+    { label: "New Tools", href: "#new-tools" },
+    { label: "Request a Feature", href: "#feature-request" },
     { label: "Contact", href: "#footer" },
   ]
 

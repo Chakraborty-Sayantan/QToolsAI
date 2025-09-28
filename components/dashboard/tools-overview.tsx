@@ -3,10 +3,9 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Braces, Cloud, QrCode, Sparkles, Zap, Image, Code, Calendar, Clock, Plane, DollarSign, Activity, /* Newspaper, */ KeyRound, Link2, Timer, Gamepad2, Mail, Smile, Tags, FileText, Palette, /* Train, */ Clock10, Ruler, CaseSensitive, Paintbrush, Banknote } from "lucide-react"
+import { ArrowRight, Braces, Cloud, QrCode, Sparkles, Zap, Image, Code, Calendar, Clock, Plane, DollarSign, Activity, KeyRound, Link2, Timer, Gamepad2, Mail, Smile, Tags, FileText, Palette, Clock10, Ruler, CaseSensitive, Paintbrush, Banknote } from "lucide-react"
 
 const tools = [
- 
   {
     title: "Content Generator",
     description: "Generate high-quality content for blogs, social media, and more",
@@ -279,40 +278,36 @@ export function ToolsOverview() {
             {category}
           </motion.h2>
           <motion.div
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+            className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
           >
             {tools.map((tool) => (
-              <motion.div 
-                key={tool.href} 
+              <motion.div
+                key={tool.href}
                 variants={itemVariants}
                 whileHover={{ y: -5, scale: 1.03 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
-                <Card className="relative flex flex-col items-center justify-center h-full pt-16 transition-shadow duration-300 hover:shadow-lg dark:hover:shadow-primary/20">
-                  {/* Top colored rectangle */}
-                  <div className="absolute top-0 w-full h-1/3 rounded-t-xl bg-gradient-to-b from-white/70 to-black/70 dark:from-black/70 dark:to-white/10 backdrop-blur-md" />
-
-                  {/* Icon Circle */}
-                  <div className="absolute top-12 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex h-24 w-24 items-center justify-center rounded-full bg-black-500/80 dark:bg-black-500/80">
-                    <tool.icon className="h-10 w-10 text-white" />
-                  </div>
-
-                  {/* Card Content with Title & Description */}
-                  <CardContent className="mt-12 text-center">
+                <div className="relative h-full overflow-hidden rounded-xl bg-card-gradient-light dark:bg-card-gradient-dark p-6">
+                  <div className="flex flex-col items-start gap-4 h-full">
+                    <div className="p-2 rounded-full bg-primary/10">
+                      <tool.icon className="h-8 w-8 text-primary" />
+                    </div>
                     <CardTitle className="text-2xl font-bold">{tool.title}</CardTitle>
-                    <CardDescription className="mt-2 text-balance">{tool.description}</CardDescription>
-                  </CardContent>
-
-                  {/* Footer with buttons */}
-                  <CardFooter className="mt-4 flex w-full justify-center gap-2">
-                    <Button asChild>
-                      <Link href={tool.href}>Open Tool</Link>
+                    <CardDescription className="text-base text-balance">{tool.description}</CardDescription>
+                    <Button asChild className="mt-auto rounded-full">
+                      <Link
+                        href={tool.href}
+                        className="inline-flex items-center gap-2"
+                      >
+                        Open Tool
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
                     </Button>
-                  </CardFooter>
-                </Card>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </motion.div>
