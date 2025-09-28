@@ -12,6 +12,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { sidebarItems } from "@/lib/sidebar-data"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { usePathname } from 'next/navigation'
 
 const ToolsOverviewWithAnimation = dynamic(
   () => import("@/components/dashboard/tools-overview").then((mod) => mod.ToolsOverview),
@@ -25,6 +26,7 @@ export default function DashboardPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [openSections, setOpenSections] = useState<string[]>([])
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname()
 
   useEffect(() => {
     setMounted(true);
@@ -133,7 +135,7 @@ export default function DashboardPage() {
               animate="visible"
               exit="exit"
               variants={drawerVariants}
-              className="fixed inset-y-0 left-0 z-50 w-72 bg-[#EBE8E6]/90 dark:bg-[#1e1f24]/90 flex flex-col p-6 overflow-y-auto"
+              className="fixed inset-y-0 left-0 z-50 w-72 bg-card-gradient-light dark:bg-card-gradient-dark flex flex-col p-6 overflow-y-auto"
             >
               <div className="flex flex-col gap-4">
                 {/* Close button top right */}
@@ -190,6 +192,7 @@ export default function DashboardPage() {
                                     variant="ghost"
                                     className={cn(
                                       "w-full justify-start",
+                                      pathname === subItem.href && "bg-primary/20"
                                     )}
                                     asChild
                                   >

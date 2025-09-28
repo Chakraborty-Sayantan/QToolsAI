@@ -7,6 +7,7 @@ import { BlurGradientBackground } from "@/components/ui/BlurGradientBackground";
 import { Toaster } from "@/components/ui/toaster"
 import { GlobalSearch } from "@/components/global-search"
 import { KbdShortcut } from "@/components/kbd-shortcut"
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: "QTools AI: Your All-in-One AI-Powered Toolkit",
@@ -78,6 +79,7 @@ export default function RootLayout({
           <Toaster />
           <GlobalSearch />
         </ThemeProvider>
+        <Analytics/>
       </body>
     </html>
   )
