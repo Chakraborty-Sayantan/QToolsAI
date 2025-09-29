@@ -4,9 +4,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   reactStrictMode: true,
-  env: {
-    HUGGINGFACE_API_KEY: process.env.HUGGINGFACE_API_KEY,
-  },
 
   images: {
     remotePatterns: [
