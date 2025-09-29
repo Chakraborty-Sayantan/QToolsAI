@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog"
 import { Loader2, Copy, History } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useHistoryStore } from "@/store/history-store";
 
 interface ContentHistory {
   topic: string
@@ -28,6 +29,7 @@ export function ContentGeneratorForm() {
   const [showHistory, setShowHistory] = useState(false)
   const [selectedContent, setSelectedContent] = useState<ContentHistory | null>(null)
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore();
   const [contentHistory, setContentHistory] = useState<ContentHistory[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("contentGeneratorHistory")
@@ -114,6 +116,14 @@ export function ContentGeneratorForm() {
         timestamp: Date.now(),
       }
       saveHistory([newEntry, ...contentHistory.slice(0, 4)])
+      
+      addHistoryItem({
+        tool: "Content Generator",
+        href: "/ai-tools/content-generator",
+        input: { prompt },
+        output: data.content,
+      });
+    
     } catch (error) {
       console.error("Error generating content:", error)
       toast({

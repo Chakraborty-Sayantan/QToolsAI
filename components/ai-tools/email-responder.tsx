@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Copy,  History } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog"
+import { useHistoryStore } from "@/store/history-store"
 
 interface EmailHistory {
   emailContent: string
@@ -23,6 +24,7 @@ export function EmailResponder() {
   const [showHistory, setShowHistory] = useState(false)
   const [selectedEmail, setSelectedEmail] = useState<EmailHistory | null>(null)
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore()
   const [emailHistory, setEmailHistory] = useState<EmailHistory[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("emailHistory")
@@ -95,6 +97,14 @@ export function EmailResponder() {
 
       setGeneratedResponse(data.response)
       updateRateLimit()
+
+      addHistoryItem({
+        tool: "Email Responder",
+        href: "/ai-tools/email-responder",
+        input: { emailContent, tone: responseType },
+        output: data.response,
+      });
+      
       const newEntry: EmailHistory = {
         emailContent,
         response: data.response,

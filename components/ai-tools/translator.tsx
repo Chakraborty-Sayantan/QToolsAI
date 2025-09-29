@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { ArrowRightLeft, Copy, Check, Loader2, Volume2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useHistoryStore } from "@/store/history-store";
 
 const languages = [
   { value: "en", label: "English" },
@@ -33,6 +34,7 @@ export function Translator() {
   const [isTranslating, setIsTranslating] = useState(false)
   const [copied, setCopied] = useState(false)
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore();
 
   const checkRateLimit = () => {
     if (typeof window !== "undefined") {
@@ -107,6 +109,19 @@ export function Translator() {
 
       setTranslatedText(data.translatedText)
       updateRateLimit()
+
+      // Add this part to save to the global history
+      addHistoryItem({
+        tool: "Language Translator",
+        href: "/ai-tools/translator",
+        input: {
+          text: sourceText,
+          from: sourceLanguage,
+          to: targetLanguage,
+        },
+        output: data.translatedText,
+      });
+
     } catch (error) {
       console.error("Error translating text:", error)
       
@@ -162,6 +177,7 @@ export function Translator() {
       })
     }
   }
+
 
   return (
     <div className="grid gap-6">

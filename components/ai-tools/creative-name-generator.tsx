@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useHistoryStore } from "@/store/history-store";
 
 export function CreativeNameGenerator() {
   const [category, setCategory] = useState("")
@@ -14,6 +15,7 @@ export function CreativeNameGenerator() {
   const [isLoading, setIsLoading] = useState(false)
   const [names, setNames] = useState("")
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore();
 
   const checkRateLimit = () => {
     if (typeof window !== "undefined") {
@@ -65,6 +67,14 @@ export function CreativeNameGenerator() {
       if (!response.ok) throw new Error(data.error || "Failed to generate names")
       setNames(data.names)
       updateRateLimit()
+
+      addHistoryItem({
+        tool: "Creative Name Generator",
+        href: "/ai-tools/creative-name-generator",
+        input: { category, keywords },
+        output: data.names,
+      });
+
     } catch (error) {
       console.error("Error generating names:", error)
       toast({
@@ -76,6 +86,7 @@ export function CreativeNameGenerator() {
       setIsLoading(false)
     }
   }
+
 
   return (
     <div className="grid gap-6">

@@ -1,6 +1,5 @@
 "use client"
 
-import type React from "react"
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -11,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Copy, Check, Loader2, Image, Sparkles } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useHistoryStore } from "@/store/history-store"
 
 type ImageStyle =
   | "photorealistic"
@@ -60,6 +60,7 @@ export function ImagePromptGenerator() {
     return []
   })
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore()
 
   // Save history to localStorage whenever it changes
   const saveHistory = (history: PromptHistory[]) => {
@@ -134,6 +135,13 @@ export function ImagePromptGenerator() {
 
       setGeneratedPrompt(data.prompt)
       updateRateLimit()
+
+      addHistoryItem({
+        tool: "Image Prompt Generator",
+        href: "/ai-tools/image-prompt-generator",
+        input: { concept, style, mood, additionalDetails },
+        output: data.prompt,
+      });
 
       // Add to history
       const newEntry: PromptHistory = {

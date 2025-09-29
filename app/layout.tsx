@@ -1,7 +1,7 @@
+import "./globals.css";
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { BlurGradientBackground } from "@/components/ui/BlurGradientBackground";
 import { Toaster } from "@/components/ui/toaster"

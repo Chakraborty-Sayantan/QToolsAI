@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { Loader2, Code, Copy, Check } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useHistoryStore } from "@/store/history-store"
 
 type ProgrammingLanguage =
   | "javascript"
@@ -37,6 +38,7 @@ export function CodeExplainer() {
   const [explanation, setExplanation] = useState("")
   const [copied, setCopied] = useState(false)
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore();
 
   const checkRateLimit = () => {
     if (typeof window !== "undefined") {
@@ -112,6 +114,15 @@ export function CodeExplainer() {
 
       setExplanation(data.explanation)
       updateRateLimit()
+
+
+      addHistoryItem({
+        tool: "Code Explainer",
+        href: "/ai-tools/code-explainer",
+        input: { code, language, level },
+        output: data.explanation,
+      });
+
     } catch (error) {
       console.error("Error explaining code:", error)
       toast({
@@ -134,6 +145,7 @@ export function CodeExplainer() {
       description: "Explanation copied to clipboard!",
     })
   }
+
 
   return (
     <div className="grid gap-6 md:grid-cols-2">

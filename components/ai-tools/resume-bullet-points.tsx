@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useHistoryStore } from "@/store/history-store"
 
 export function ResumeBulletPoints() {
   const [jobDescription, setJobDescription] = useState("")
@@ -14,6 +15,7 @@ export function ResumeBulletPoints() {
   const [isLoading, setIsLoading] = useState(false)
   const [bulletPoints, setBulletPoints] = useState("")
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore();
 
   const checkRateLimit = () => {
     if (typeof window !== "undefined") {
@@ -65,6 +67,14 @@ export function ResumeBulletPoints() {
       if (!response.ok) throw new Error(data.error || "Failed to generate points")
       setBulletPoints(data.bulletPoints)
       updateRateLimit()
+
+      addHistoryItem({
+        tool: "Resume Bullet Points",
+        href: "/ai-tools/resume-bullet-points",
+        input: { jobDescription, userExperience },
+        output: data.bulletPoints,
+      });
+      
     } catch (error) {
       console.error("Error generating points:", error)
       toast({

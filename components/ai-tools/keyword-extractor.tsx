@@ -7,12 +7,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Loader2, Tags } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useHistoryStore } from "@/store/history-store"
 
 export function KeywordExtractor() {
   const [text, setText] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [keywords, setKeywords] = useState<string[]>([])
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore();
 
   const checkRateLimit = () => {
     if (typeof window !== "undefined") {
@@ -62,8 +64,17 @@ export function KeywordExtractor() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || "Failed to extract keywords")
-      setKeywords(data.keywords.split(",").map((kw: string) => kw.trim()))
+      const extractedKeywords = data.keywords.split(",").map((kw: string) => kw.trim());
+      setKeywords(extractedKeywords)
       updateRateLimit()
+
+      addHistoryItem({
+        tool: "Keyword Extractor",
+        href: "/ai-tools/keyword-extractor",
+        input: { text },
+        output: extractedKeywords,
+      });
+
     } catch (error) {
       console.error("Error extracting keywords:", error)
       toast({

@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog"
 import { Loader2, Copy, History } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useHistoryStore } from "@/store/history-store";
 
 interface SummaryHistory {
   text: string
@@ -25,6 +26,7 @@ export function TextSummarizer() {
   const [isSummarizing, setIsSummarizing] = useState(false)
   const [summary, setSummary] = useState("")
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore();
   const [summaryHistory, setSummaryHistory] = useState<SummaryHistory[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("summaryHistory")
@@ -111,6 +113,14 @@ export function TextSummarizer() {
         timestamp: Date.now(),
       }
       saveHistory([newEntry, ...summaryHistory.slice(0, 4)])
+
+      addHistoryItem({
+        tool: "Text Summarizer",
+        href: "/ai-tools/text-summarizer",
+        input: { text, length, style },
+        output: data.summary,
+      });
+      
     } catch (error) {
       console.error("Error summarizing text:", error)
       toast({

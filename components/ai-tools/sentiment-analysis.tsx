@@ -7,12 +7,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Loader2, Smile, Frown, Meh } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { useHistoryStore } from "@/store/history-store"
 
 export function SentimentAnalysis() {
   const [text, setText] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [sentiment, setSentiment] = useState<string | null>(null)
   const { toast } = useToast()
+  const { addHistoryItem } = useHistoryStore();
 
   const checkRateLimit = () => {
     if (typeof window !== "undefined") {
@@ -64,6 +66,14 @@ export function SentimentAnalysis() {
       if (!response.ok) throw new Error(data.error || "Failed to analyze sentiment")
       setSentiment(data.sentiment)
       updateRateLimit()
+
+      addHistoryItem({
+        tool: "Sentiment Analysis",
+        href: "/ai-tools/sentiment-analysis",
+        input: { text },
+        output: data.sentiment,
+      });
+
     } catch (error) {
       console.error("Error analyzing sentiment:", error)
       toast({

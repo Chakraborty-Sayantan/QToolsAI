@@ -1,6 +1,6 @@
 import {  Braces,  Cloud,  Gamepad2,  Home,  /* Settings, */  Sparkles,  Zap,  Calendar,  Clock,  Plane,  DollarSign,  Activity,
   /* Newspaper, */  KeyRound,  Link2,  Timer,  Image,  Code,  Mail,  Smile,  Tags,  FileText,  Palette,  /* Train, */  Clock10,
-  Ruler,  CaseSensitive,  Paintbrush,  Banknote} from "lucide-react"
+  Ruler,  CaseSensitive,  Paintbrush,  Banknote, History} from "lucide-react"
 
 export const sidebarItems = [
   {
@@ -8,6 +8,7 @@ export const sidebarItems = [
     href: "/dashboard",
     icon: Home,
   },
+  
   {
     title: "AI Tools",
     icon: Sparkles,
@@ -59,6 +60,11 @@ export const sidebarItems = [
       { title: "Hangman", href: "/games/hangman", icon: Gamepad2 },
       { title: "Snake", href: "/games/snake", icon: Gamepad2 },
     ],
+  },
+  {
+    title: "History", 
+    href: "/history",
+    icon: History,
   },
   /* {
     title: "Settings",

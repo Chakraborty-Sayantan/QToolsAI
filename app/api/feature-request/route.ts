@@ -1,15 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { z } from "zod";
+import { Ratelimit } from "@upstash/ratelimit";
+import { kv } from "@vercel/kv";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(req: NextRequest) {
-  try {
-    const { email, request } = await req.json();
+const requestSchema = z.object({
+  email: z.string().email().optional().or(z.literal("")),
+  request: z.string().min(1, "Feature request description is required."),
+});
 
-    if (!request) {
-      return NextResponse.json({ error: "Feature request description is required." }, { status: 400 });
+const ratelimit = new Ratelimit({
+  redis: kv,
+  limiter: Ratelimit.slidingWindow(2, "10 s"),
+});
+
+export async function POST(req: NextRequest) {
+  const ip = req.ip ?? "127.0.0.1";
+  // Check if the current IP has exceeded the rate limit
+  const { success } = await ratelimit.limit(ip);
+  if (!success) {
+  // If the rate limit is exceeded, return a 429 Too Many Requests error
+  return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  }
+  
+  try {
+    const body = await req.json();
+    const parseResult = requestSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      return NextResponse.json({ error: parseResult.error.flatten() }, { status: 400 });
     }
+
+    const { email, request } = parseResult.data;
 
     const toEmail = process.env.TO_EMAIL;
     if (!toEmail) {
