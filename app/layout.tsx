@@ -20,6 +20,12 @@ const inter = Inter({ subsets: ["latin"] })
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Common metadata for social sharing cards
+  const title = "QTools AI: Your All-in-One AI-Powered Toolkit";
+  const description = "Access dozens of intelligent AI tools, utilities, and games to boost your productivity and creativity, all in one place. No sign-up required.";
+  const url = "https://www.qtoolsai.store/";
+  const socialImage = "https://www.qtoolsai.store/social-card.png"; 
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -33,15 +39,29 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         
         {/* Canonical Tag */}
-        <link rel="canonical" href="https://www.qtoolsai.store/" />
+        <link rel="canonical" href={url} />
 
-        {/* OpenGraph Meta Tags */}
-        <meta property="og:title" content="QTools AI: Your All-in-One AI-Powered Toolkit" />
-        <meta property="og:description" content="Access dozens of intelligent AI tools, utilities, and games to boost your productivity and creativity, all in one place. No sign-up required." />
-        <meta property="og:image" content="https://www.qtoolsai.store/LOGO1.png" />
-        <meta property="og:url" content="https://www.qtoolsai.store/" />
+        {/* --- SOCIAL SHARING CARDS --- */}
+
+        {/* OpenGraph Meta Tags (for Facebook, LinkedIn, etc.) */}
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={socialImage} />
+        <meta property="og:url" content={url} />
         <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="QTools AI" />
         
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={url} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={socialImage} />
+        <meta name="twitter:site" content="@Sayantan_Codes" />
+        <meta name="twitter:creator" content="@Sayantan_Codes" />
+        
+        {/* --- END SOCIAL SHARING CARDS --- */}
+
         {/* Schema.org Metadata */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: `{
           "@context": "https://schema.org",
